@@ -202,10 +202,25 @@ public interface IBurpExtenderCallbacks
     public String[] getHeaders(byte[] message) throws Exception;
 
     /**
+     *
+     * This method can be used to register a new menu item which will appear
+     * on the various context menus that are used throughout Burp Suite to
+     * handle user-driven actions.
+     *
+     * @param menuItemCaption The caption to be displayed on the menu item.
+     * @param menuItemHandler The handler to be invoked when the user clicks
+     * on the menu item.
+     */
+    public void registerMenuItem(
+            String menuItemCaption,
+            IMenuItemHandler menuItemHandler);
+
+    /**
      * Shuts down burp programatically. If the method returns, the user
      * cancelled the shutdown prompt.
      *
      * Available in v1.2.17+.
      */
-    public void exitSuite(boolean promptUser); 
+    public void exitSuite(boolean promptUser);
+
 }

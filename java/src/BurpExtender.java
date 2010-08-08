@@ -4,6 +4,7 @@ import burp.IBurpExtender;
 import burp.IBurpExtenderCallbacks;
 import burp.IScanIssue;
 import burp.IHttpRequestResponse;
+import burp.IMenuItemHandler;
 
 import org.jruby.*;
 import org.jruby.javasupport.JavaUtil;
@@ -185,11 +186,16 @@ public class BurpExtender implements IBurpExtender {
         };
 
         // slurp back in the action value in-case it's been changed
-        action[0] = ((int[]) JavaUtil.convertRubyToJava(r_action))[0];
+        // This is appear not used
+        //action[0] = ((int[]) JavaUtil.convertRubyToJava(r_action))[0];
+        action[0] = r_action.convertToArray().indexOf(0);
+
+
 
         IRubyObject ret = r_obj.callMethod(ctx(r_obj), PROXYMSG_METH, pxy_msg);
         if(ret != r_msg) {
-          return (byte[]) JavaUtil.convertRubyToJava(ret);
+          //return (byte[]) JavaUtil.convertRubyToJava(ret);
+          return (byte[]) ret.convertToArray().toString().getBytes();
         }
       }
 

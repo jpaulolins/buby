@@ -35,6 +35,7 @@ Gem::Specification.new do |s|
      "java/src/burp/IHttpRequestResponse.java",
      "java/src/burp/IScanIssue.java",
      "java/src/burp/IScanQueueItem.java",
+     "java/src/burp/IMenuItemHandler.java",
      "lib/buby.rb",
      "lib/buby/extends.rb",
      "lib/buby/extends/buby_array_wrapper.rb",

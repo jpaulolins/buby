@@ -333,6 +333,17 @@ class Buby
   end
   alias exit_suite exitSuite
   alias close exitSuite
+  
+  # Create a menu item which appear in context Menu.
+  #
+  #
+  # IMPORTANT: This method is only available with Burp 1.3.07 and higher.
+  #
+  # * filename = path and filename of the file to restore from
+  def registerMenuItem(menu_caption, klass_menu_treat_message_info)
+    _check_and_callback(:registerMenuItem, menu_caption, klass_menu_treat_message_info)
+  end
+  alias register_menu_item registerMenuItem
 
   ### Event Handlers ###
 
