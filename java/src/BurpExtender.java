@@ -186,16 +186,22 @@ public class BurpExtender implements IBurpExtender {
         };
 
         // slurp back in the action value in-case it's been changed
+
         // This is appear not used
         //action[0] = ((int[]) JavaUtil.convertRubyToJava(r_action))[0];
-        action[0] = r_action.convertToArray().indexOf(0);
-
-
+        // action[0] = r_action.convertToArray().indexOf(0);
+        // 
+        // 
+        // 
+        // IRubyObject ret = r_obj.callMethod(ctx(r_obj), PROXYMSG_METH, pxy_msg);
+        // if(ret != r_msg) {
+        //   //return (byte[]) JavaUtil.convertRubyToJava(ret);
+        //   return (byte[]) ret.convertToArray().toString().getBytes();
+        action[0] = ((int[])r_action.toJava(int[].class))[0];
 
         IRubyObject ret = r_obj.callMethod(ctx(r_obj), PROXYMSG_METH, pxy_msg);
         if(ret != r_msg) {
-          //return (byte[]) JavaUtil.convertRubyToJava(ret);
-          return (byte[]) ret.convertToArray().toString().getBytes();
+          return (byte []) ret.toJava(byte[].class);
         }
       }
 
@@ -297,5 +303,22 @@ public class BurpExtender implements IBurpExtender {
      */
     public final static int ACTION_DROP = 3;    
 
+    /**
+     * Causes Burp Proxy to follow the current interception rules to determine
+     * the appropriate action to take for the message, and then make a second
+     * call to processProxyMessage.
+     */
+    public final static int ACTION_FOLLOW_RULES_AND_REHOOK = 0x10;
+    /**
+     * Causes Burp Proxy to present the message to the user for manual
+     * review or modification, and then make a second call to
+     * processProxyMessage.
+     */
+    public final static int ACTION_DO_INTERCEPT_AND_REHOOK = 0x11;
+    /**
+     * Causes Burp Proxy to skip user interception, and then make a second call
+     * to processProxyMessage.
+     */
+    public final static int ACTION_DONT_INTERCEPT_AND_REHOOK = 0x12;
 }
 

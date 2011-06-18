@@ -81,6 +81,11 @@ include_class 'BurpExtender'
 #
 class Buby
 
+  VERSION = 
+    if File.file?(f=::File.expand_path(File.join(::File.dirname(__FILE__), "../VERSION")))
+      File.read(f).chomp
+    end
+
   # :stopdoc:
   LIBPATH = ::File.expand_path(::File.dirname(__FILE__)) + ::File::SEPARATOR
   PATH = ::File.dirname(LIBPATH) + ::File::SEPARATOR
@@ -224,7 +229,7 @@ class Buby
   #  * url = The new seed URL to begin spidering from.
   def sendToSpider(url)
     url = java.net.URL.new(url) if url.is_a? String
-    _check_cb.includeInScope(url)
+    _check_cb.sendToSpider(url)
   end
   alias send_to_spider sendToSpider
   alias spider sendToSpider
@@ -345,6 +350,66 @@ class Buby
   end
   alias register_menu_item registerMenuItem
 
+  # This method can be used to register a new menu item which will appear 
+  # on the various context menus that are used throughout Burp Suite to 
+  # handle user-driven actions.
+  # 
+  # @param menuItemCaption The caption to be displayed on the menu item.
+  # @param menuItemHandler The handler to be invoked when the user clicks
+  # on the menu item.
+  # 
+  # This method is only available with Burp 1.3.07 and higher.
+  def registerMenuItem(menuItemCaption, menuItemHandler)
+    _check_and_callback(:registerMenuItem, menuItemCaption, menuItemHandler)
+    issueAlert("Handler #{menuItemHandler} registered for \"#{menuItemCaption}\"")
+  end
+  alias register_menu_item registerMenuItem
+
+  ### 1.3.09 methods ###
+
+  # This method can be used to add an item to Burp's site map with the
+  # specified request/response details. This will overwrite the details
+  # of any existing matching item in the site map.
+  # 
+  # @param item Details of the item to be added to the site map
+  #
+  # This method is only available with Burp 1.3.09+
+  def addToSiteMap(item)
+    _check_and_callback(:addToSiteMap, item)
+  end
+  alias add_to_site_map addToSiteMap
+
+  # This method causes Burp to save all of its current configuration as a
+  # Map of name/value Strings.
+  #
+  # @return A Map of name/value Strings reflecting Burp's current
+  # configuration.
+  #
+  # This method is only available with Burp 1.3.09+
+  def saveConfig
+    _check_and_callback(:saveConfig).to_hash
+  end
+  alias save_config saveConfig
+  alias config saveConfig
+
+  # This method causes Burp to load a new configuration from the Map of
+  # name/value Strings provided. Any settings not specified in the Map will
+  # be restored to their default values. To selectively update only some
+  # settings and leave the rest unchanged, you should first call
+  # <code>saveConfig</code> to obtain Burp's current configuration, modify
+  # the relevant items in the Map, and then call <code>loadConfig</code>
+  # with the same Map.
+  #
+  # @param config A map of name/value Strings to use as Burp's new
+  # configuration.
+  #
+  # This method is only available with Burp 1.3.09+
+  def loadConfig(conf)
+    _check_and_callback(:loadConfig, conf)
+  end
+  alias load_config loadConfig
+  alias config= loadConfig
+
   ### Event Handlers ###
 
   # This method is called by the BurpExtender java implementation upon 
@@ -382,10 +447,13 @@ class Buby
     pp([:got_callbacks, cb]) if $DEBUG
   end
 
-  ACTION_FOLLOW_RULES   = BurpExtender::ACTION_FOLLOW_RULES
-  ACTION_DO_INTERCEPT   = BurpExtender::ACTION_DO_INTERCEPT
-  ACTION_DONT_INTERCEPT = BurpExtender::ACTION_DONT_INTERCEPT
-  ACTION_DROP           = BurpExtender::ACTION_DROP
+  ACTION_FOLLOW_RULES              = BurpExtender::ACTION_FOLLOW_RULES
+  ACTION_DO_INTERCEPT              = BurpExtender::ACTION_DO_INTERCEPT
+  ACTION_DONT_INTERCEPT            = BurpExtender::ACTION_DONT_INTERCEPT
+  ACTION_DROP                      = BurpExtender::ACTION_DROP
+  ACTION_FOLLOW_RULES_AND_REHOOK   = BurpExtender::ACTION_FOLLOW_RULES_AND_REHOOK
+  ACTION_DO_INTERCEPT_AND_REHOOK   = BurpExtender::ACTION_DO_INTERCEPT_AND_REHOOK
+  ACTION_DONT_INTERCEPT_AND_REHOOK = BurpExtender::ACTION_DONT_INTERCEPT_AND_REHOOK
 
   # Seems we need to specifically render our 'message' to a string here in
   # ruby. Otherwise there's flakiness when converting certain binary non-ascii
